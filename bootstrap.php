@@ -1,5 +1,5 @@
 <?php
 
-require_once __DIR__."/vendor/autoload.php";
+$loader = require_once __DIR__."/vendor/autoload.php";
 
-return new \JournalMedia\Pharbiter\Application;
+return new \JournalMedia\Pharbiter\Application($loader);
