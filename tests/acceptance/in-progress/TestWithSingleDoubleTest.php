@@ -11,7 +11,7 @@ class TestWithSingleDoubleTest extends AcceptanceTestCase
         $output = shell_exec("./pharb check fixtures/tests/RepositoryTest.php it_saves_an_entity");
 
         $this->assertSame(
-            "No contract marked for Fake/Porter::export()",
+            "No contract marked for Fake/Porter::export()\n",
             $output
         );
     }
