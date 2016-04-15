@@ -27,15 +27,13 @@ class ConsoleServiceProviderTest extends IntegrationTestCase
         $container[Kernel::class]->handle(
             new ArgvInput([
                 "pharb",
-                "check",
-                "some/path/TestFile.php",
-                "some_test_method_name"
+                "help"
             ]),
             $output = new BufferedOutput
         );
 
-        $this->assertSame(
-            "Placeholder result\n",
+        $this->assertContains(
+            "Usage:\n",
             $output->fetch()
         );
     }

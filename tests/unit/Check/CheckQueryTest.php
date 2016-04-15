@@ -20,8 +20,8 @@ class CheckQueryTest extends UnitTestCase
     public function can_be_invoked()
     {
         // Explicit collaborators
-        $reader = $this->prophesize(Reader::class);
-        $checker = $this->prophesize(Checker::class);
+        $reader = $this->prophesize('JournalMedia\Pharbiter\Test\Reader');
+        $checker = $this->prophesize('JournalMedia\Pharbiter\Check\Checker');
 
         $testCaseLocation = TestCaseLocation::fromString("some/path/TestFile.php");
         $testName = TestName::fromString("some_test_method_name");

@@ -8,10 +8,10 @@ class TestWithSingleDoubleTest extends AcceptanceTestCase
      */
     public function without_an_annotation()
     {
-        $output = shell_exec("./pharb check fixtures/tests/RepositoryTest.php it_saves_an_entity");
+        $output = shell_exec("./pharb check tests/fixtures/tests/RepositoryTest.php it_saves_an_entity");
 
         $this->assertSame(
-            "No contract marked for Fake/Porter::export()\n",
+            "No contract marked for Fake\\Porter::export()\n",
             $output
         );
     }

@@ -9,6 +9,10 @@ class Checker
 {
     public function check(Test $test): string
     {
-        return "Placeholder result";
+        return $test->getDoubles()
+            ->map(function ($double) {
+                return sprintf("No contract marked for %s::%s()", $double->getClassName(), $double->getMethodName());
+            })
+            ->implode("\n");
     }
 }
