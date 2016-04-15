@@ -19,7 +19,8 @@
       "tests/acceptance/AcceptanceTestCase.php"
     ],
     "psr-4": {
-      "JournalMedia\\PharbiterTest\\Integration\\": "tests/integration"
+      "JournalMedia\\PharbiterTest\\Integration\\": "tests/integration",
+      "JournalMedia\\PharbiterTest\\Unit\\": "tests/unit"
     }
   }
 }

@@ -8,6 +8,7 @@ use JournalMedia\Pharbiter\Check\TestCaseLocation;
 use JournalMedia\Pharbiter\Check\TestName;
 use JournalMedia\Pharbiter\Console\CheckCommand;
 use JournalMedia\PharbiterTest\Integration\IntegrationTestCase;
+use JournalMedia\PharbiterTest\Unit\Check\CheckQueryTest;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -31,7 +32,7 @@ class CheckCommandTest extends IntegrationTestCase
         ]);
         $output = new BufferedOutput;
 
-        /** @contract ? */
+        /** @contract CheckQueryTest::can_be_invoked */
         $query->__invoke(
             TestCaseLocation::fromString("some/path/TestFile.php"),
             TestName::fromString("some_test_method_name")
