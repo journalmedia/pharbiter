@@ -4,4 +4,7 @@
 $application = require __DIR__."/bootstrap.php";
 
 $application->make(\JournalMedia\Pharbiter\Console\Kernel::class)
-    ->handle();
+    ->handle(
+        new \Symfony\Component\Console\Input\ArgvInput,
+        new \Symfony\Component\Console\Output\ConsoleOutput
+    );
