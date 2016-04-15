@@ -10,5 +10,10 @@
     "psr-4": {
       "JournalMedia\\Pharbiter\\": "src/"
     }
+  },
+  "autoload-dev": {
+    "classmap": [
+      "tests/acceptance/AcceptanceTestCase.php"
+    ]
   }
 }
