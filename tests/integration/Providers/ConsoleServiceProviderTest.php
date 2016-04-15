@@ -22,7 +22,7 @@ class ConsoleServiceProviderTest extends IntegrationTestCase
         $kernel->handle($input, $output);
 
         $this->assertSame(
-            "Fake command ran\n",
+            "Placeholder result\n",
             $output->fetch()
         );
     }

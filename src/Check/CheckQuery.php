@@ -7,6 +7,6 @@ class CheckQuery
 {
     public function __invoke(): string
     {
-        //
+        return "Placeholder result";
     }
 }
