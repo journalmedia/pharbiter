@@ -3,6 +3,7 @@
   "require": {
     "php": ">=7.0",
     "illuminate/container": "~5.2.28",
+    "illuminate/support": "~5.2.28",
     "symfony/console": "~3.0"
   },
   "require-dev": {

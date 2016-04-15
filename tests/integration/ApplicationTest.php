@@ -17,4 +17,21 @@ class ApplicationTest extends IntegrationTestCase
             $kernel
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_registers_all_service_providers()
+    {
+        $application = new \JournalMedia\Pharbiter\Application;
+
+        $expectedContainer = new Illuminate\Container\Container;
+
+        (new \JournalMedia\Pharbiter\Providers\ConsoleServiceProvider($expectedContainer))->register();
+
+        $this->assertEquals(
+            $expectedContainer,
+            $application->getContainer()
+        );
+    }
 }
