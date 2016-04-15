@@ -1,6 +1,15 @@
 <?php
 declare(strict_types=1);
 
+namespace JournalMedia\PharbiterTest\Integration\Providers;
+
+use Illuminate\Container\Container;
+use JournalMedia\Pharbiter\Console\Kernel;
+use JournalMedia\Pharbiter\Providers\ConsoleServiceProvider;
+use JournalMedia\PharbiterTest\Integration\IntegrationTestCase;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\BufferedOutput;
+
 class ConsoleServiceProviderTest extends IntegrationTestCase
 {
     /**
@@ -8,23 +17,22 @@ class ConsoleServiceProviderTest extends IntegrationTestCase
      */
     public function it_binds_a_symfony_console_kernel_to_our_kernel()
     {
-        $container = new Illuminate\Container\Container;
+        // Create test container
+        $container = new Container;
 
-        $provider = new \JournalMedia\Pharbiter\Providers\ConsoleServiceProvider($container);
+        // Create the service provider and register it with the test container
+        (new ConsoleServiceProvider($container))->register();
 
-        $provider->register();
-
-        $kernel = $container[\JournalMedia\Pharbiter\Console\Kernel::class];
-
-        $input = new \Symfony\Component\Console\Input\ArgvInput([
-            "pharb",
-            "check",
-            "some/path/TestFile.php",
-            "some_test_method_name"
-        ]);
-        $output = new \Symfony\Component\Console\Output\BufferedOutput;
-
-        $kernel->handle($input, $output);
+        // Assert that our Kernel behaves as expected with the Symfony Kernel binding
+        $container[Kernel::class]->handle(
+            new ArgvInput([
+                "pharb",
+                "check",
+                "some/path/TestFile.php",
+                "some_test_method_name"
+            ]),
+            $output = new BufferedOutput
+        );
 
         $this->assertSame(
             "Placeholder result\n",

@@ -1,6 +1,17 @@
 <?php
 declare(strict_types=1);
 
+namespace JournalMedia\PharbiterTest\Integration\Console;
+
+use JournalMedia\Pharbiter\Console\Kernel;
+use JournalMedia\PharbiterTest\Integration\IntegrationTestCase;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Output\OutputInterface;
+
 class KernelTest extends IntegrationTestCase
 {
     /**
@@ -8,12 +19,12 @@ class KernelTest extends IntegrationTestCase
      */
     public function it_can_handle_a_run()
     {
-        $kernel = new \JournalMedia\Pharbiter\Console\Kernel($this->createSymfonyKernel());
+        $kernel = new Kernel($this->createSymfonyKernel());
 
-        $input = new \Symfony\Component\Console\Input\ArgvInput(["console", "fake:command"]);
-        $output = new \Symfony\Component\Console\Output\BufferedOutput;
-
-        $kernel->handle($input, $output);
+        $kernel->handle(
+            new ArgvInput(["console", "fake:command"]),
+            $output = new BufferedOutput
+        );
 
         $this->assertSame(
             "Fake command ran\n",
@@ -21,22 +32,19 @@ class KernelTest extends IntegrationTestCase
         );
     }
 
-    private function createSymfonyKernel()
+    private function createSymfonyKernel(): Application
     {
-        $symfonyKernel = new \Symfony\Component\Console\Application;
+        $symfonyKernel = new Application();
         $symfonyKernel->setAutoExit(false);
 
-        $symfonyKernel->add(new class() extends \Symfony\Component\Console\Command\Command
+        $symfonyKernel->add(new class() extends Command
         {
             protected function configure()
             {
                 $this->setName('fake:command');
             }
 
-            protected function execute(
-                \Symfony\Component\Console\Input\InputInterface $input,
-                \Symfony\Component\Console\Output\OutputInterface $output
-            ) {
+            protected function execute(InputInterface $input, OutputInterface $output) {
                $output->writeln("Fake command ran");
             }
         });

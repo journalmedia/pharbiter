@@ -1,6 +1,8 @@
 <?php
 
-class IntegrationTestCase extends PHPUnit_Framework_TestCase
+namespace JournalMedia\PharbiterTest\Integration;
+
+class IntegrationTestCase extends \PHPUnit_Framework_TestCase
 {
     //
 }

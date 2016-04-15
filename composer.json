@@ -16,8 +16,10 @@
   },
   "autoload-dev": {
     "classmap": [
-      "tests/acceptance/AcceptanceTestCase.php",
-      "tests/integration/IntegrationTestCase.php"
-    ]
+      "tests/acceptance/AcceptanceTestCase.php"
+    ],
+    "psr-4": {
+      "JournalMedia\\PharbiterTest\\Integration\\": "tests/integration"
+    }
   }
 }
