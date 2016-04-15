@@ -12,11 +12,18 @@ class CheckCommandTest extends IntegrationTestCase
 
         $command = new \JournalMedia\Pharbiter\Console\CheckCommand($query->reveal());
 
-        $input = new \Symfony\Component\Console\Input\ArgvInput([$command->getName()]);
+        $input = new \Symfony\Component\Console\Input\ArgvInput([
+            $command->getName(),
+            "some/path/TestFile.php",
+            "some_test_method_name"
+        ]);
         $output = new \Symfony\Component\Console\Output\BufferedOutput;
 
         /** @contract ? */
-        $query->__invoke()
+        $query->__invoke(
+            \JournalMedia\Pharbiter\Check\TestCaseLocation::fromString("some/path/TestFile.php"),
+            \JournalMedia\Pharbiter\Check\TestName::fromString("some_test_method_name")
+        )
             ->willReturn("Query result");
 
         $command->run($input, $output);
