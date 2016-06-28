@@ -8,6 +8,7 @@ use JournalMedia\Pharbiter\Check\TestCaseLocation;
 use JournalMedia\Pharbiter\Check\TestName;
 use JournalMedia\Pharbiter\ClassLoader;
 use JournalMedia\Pharbiter\Filesystem;
+use JournalMedia\Pharbiter\Test\Parser\TestMethodCall;
 use PhpParser\Comment\Doc;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\MethodCall;
@@ -57,14 +58,20 @@ class Reader
             });
 
         $methodCallsOnProphecies = collect($testMethod->stmts)
-            ->filter(function ($node) use ($prophecyAssignments) {
-                return $this->isMethodCallOnProphecy($node, $prophecyAssignments);
+            ->filter(function ($node) {
+                return $node instanceof MethodCall;
+            })
+            ->map(function (MethodCall $methodCall) {
+                return TestMethodCall::fromMethodCall($methodCall);
+            })
+            ->filter(function (TestMethodCall $methodCall) use ($prophecyAssignments) {
+                return $methodCall->isCallOnAProphecy($prophecyAssignments);
             });
 
         $methodCallsWithoutContracts = $methodCallsOnProphecies
-            ->reject(function ($methodCall) {
+            ->reject(function (TestMethodCall $methodCall) {
                 return collect(
-                        $this->getRootVariableOnMethodCall($methodCall)
+                        $methodCall->getRootVariable()
                             ->getAttribute("comments")
                 )
                     ->contains(function ($key, $comment) {
@@ -74,51 +81,17 @@ class Reader
             });
 
         return Test::fromDoubleMethodConfigurations($methodCallsWithoutContracts
-            ->map(function ($methodCall) use ($prophecyAssignments) {
+            ->map(function (TestMethodCall $methodCall) use ($prophecyAssignments) {
                 return DoubleMethodConfiguration::fromClassAndMethod(
                     $prophecyAssignments
                         ->first(function ($key, ProphecyAssignment $prophecyAssignment) use ($methodCall) {
-                            return $prophecyAssignment->getVariableName() === $this->getRootVariableOnMethodCall($methodCall)->name;
+                            return $prophecyAssignment->getVariableName() === $methodCall->getRootVariable()->name;
                         })
                         ->getProphesizedClassName(),
-                    $this->getFirstMethodCallInChain($methodCall)
+                    $methodCall->getFirstMethodCallInChain()
                         ->name
                 );
             })
             ->values());
-    }
-
-    private function getRootVariableOnMethodCall($node): Variable
-    {
-        if ($node instanceof MethodCall) {
-            return $this->getRootVariableOnMethodCall($node->var);
-        }
-
-        if ($node instanceof Variable) {
-            return $node;
-        }
-
-        throw new RuntimeException("Given method call's root is not a variable.");
-    }
-
-    private function getFirstMethodCallInChain(MethodCall $node): MethodCall
-    {
-        if ($node->var instanceof MethodCall) {
-            return $this->getFirstMethodCallInChain($node->var);
-        }
-
-        return $node;
-    }
-
-    private function isMethodCallOnProphecy($node, Collection $prophecyAssignments)
-    {
-        if ($node instanceof MethodCall) {
-            return $this->isMethodCallOnProphecy($node->var, $prophecyAssignments);
-        }
-
-        return $node instanceof Variable
-            && $prophecyAssignments->contains(function ($key, ProphecyAssignment $prophecyAssignment) use ($node) {
-                return $prophecyAssignment->getVariableName() === $node->name;
-            });
     }
 }
