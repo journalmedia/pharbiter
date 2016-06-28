@@ -7,7 +7,7 @@ use JournalMedia\Pharbiter\Check\Checker;
 use JournalMedia\Pharbiter\Check\CheckQuery;
 use JournalMedia\Pharbiter\Check\TestCaseLocation;
 use JournalMedia\Pharbiter\Check\TestName;
-use JournalMedia\Pharbiter\Test\Double;
+use JournalMedia\Pharbiter\Test\DoubleMethodConfiguration;
 use JournalMedia\Pharbiter\Test\Reader;
 use JournalMedia\Pharbiter\Test\Test;
 use JournalMedia\PharbiterTest\Unit\UnitTestCase;
@@ -29,7 +29,7 @@ class CheckQueryTest extends UnitTestCase
         $query = new CheckQuery($reader->reveal(), $checker->reveal());
 
         // Implicit collaborators
-        $test = Test::fromDoubles(collect());
+        $test = Test::fromDoubleMethodConfigurations(collect());
 
         /** @contract ? */
         $reader->readTest($testCaseLocation, $testName)

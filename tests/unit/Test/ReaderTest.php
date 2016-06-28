@@ -7,7 +7,7 @@ use JournalMedia\Pharbiter\Check\TestCaseLocation;
 use JournalMedia\Pharbiter\Check\TestName;
 use JournalMedia\Pharbiter\ClassLoader;
 use JournalMedia\Pharbiter\Filesystem;
-use JournalMedia\Pharbiter\Test\Double;
+use JournalMedia\Pharbiter\Test\DoubleMethodConfiguration;
 use JournalMedia\Pharbiter\Test\Reader;
 use JournalMedia\Pharbiter\Test\Test;
 use JournalMedia\PharbiterTest\Unit\UnitTestCase;
@@ -39,8 +39,8 @@ class ReaderTest extends UnitTestCase
         $test = $reader->readTest($testCaseLocation, $testName);
 
         $this->assertEquals(
-            Test::fromDoubles(collect([
-                Double::fromClassAndMethod('Fake\Porter', "export")
+            Test::fromDoubleMethodConfigurations(collect([
+                DoubleMethodConfiguration::fromClassAndMethod('Fake\Porter', "export")
             ])),
             $test
         );

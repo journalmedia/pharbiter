@@ -73,9 +73,9 @@ class Reader
                     });
             });
 
-        return Test::fromDoubles($methodCallsWithoutContracts
+        return Test::fromDoubleMethodConfigurations($methodCallsWithoutContracts
             ->map(function ($methodCall) use ($prophecyAssignments) {
-                return Double::fromClassAndMethod(
+                return DoubleMethodConfiguration::fromClassAndMethod(
                     $prophecyAssignments
                         ->first(function ($key, ProphecyAssignment $prophecyAssignment) use ($methodCall) {
                             return $prophecyAssignment->getVariableName() === $this->getRootVariableOnMethodCall($methodCall)->name;
