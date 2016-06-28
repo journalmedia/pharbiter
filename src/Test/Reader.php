@@ -3,10 +3,18 @@ declare(strict_types=1);
 
 namespace JournalMedia\Pharbiter\Test;
 
+use Illuminate\Support\Collection;
 use JournalMedia\Pharbiter\Check\TestCaseLocation;
 use JournalMedia\Pharbiter\Check\TestName;
 use JournalMedia\Pharbiter\ClassLoader;
 use JournalMedia\Pharbiter\Filesystem;
+use PhpParser\Comment\Doc;
+use PhpParser\Node\Expr\Assign;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\ParserFactory;
+use Symfony\Component\Yaml\Exception\RuntimeException;
 
 class Reader
 {
@@ -24,80 +32,93 @@ class Reader
 
     public function readTest(TestCaseLocation $testCaseLocation, TestName $name): Test
     {
-        $className = $this->classLoader->getClassName(strval($testCaseLocation));
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
 
-        $reflection = new \ReflectionClass($className);
-        $method = $reflection->getMethod(strval($name));
+        $tree = $parser->parse(file_get_contents(strval($testCaseLocation)));
 
-        $code = $this->filesystem->readBetween(strval($testCaseLocation), $method->getStartLine(), $method->getEndLine());
+        $class = $tree[1]->stmts[0];
 
-        $code = collect(explode("\n", $code))
-            ->map(function ($line) {
-                return trim($line);
+        $testMethod = collect($class->stmts)
+            ->filter(function ($node) {
+                return $node instanceof ClassMethod;
             })
-            ->reject(function ($line) {
-                return $line === "";
+            ->first(function ($key, ClassMethod $node) use ($name) {
+                return $node->name === strval($name);
             });
 
-        $phpVariableRegex = '\$([a-zA-Z_][a-zA-Z0-9_]*)';
-        $phpClassRegex = '([a-zA-Z_\x7f-\xff][\\a-zA-Z0-9_\x7f-\xff]*)';
-        $phpMethodRegex = '([a-zA-Z_][a-zA-Z0-9_]*)';
-        $prophesizeRegex = sprintf('\$this->prophesize\([\'"]%s[\'"]\)', $phpClassRegex);
-        $prophecyAssignmentRegex = sprintf(
-            '#%s\s+=\s+%s#',
-            $phpVariableRegex,
-            $prophesizeRegex
-        );
-
-        $prophets = $code
-                ->filter(function ($line) use ($prophecyAssignmentRegex) {
-                    return preg_match($prophecyAssignmentRegex, $line) === 1;
-                })
-                ->map(function ($line) use ($prophecyAssignmentRegex) {
-                    preg_match($prophecyAssignmentRegex, $line, $matches);
-                    return $matches;
-                })
-                ->keyBy(function ($matches) {
-                    return $matches[1];
-                })
-                ->map(function ($matches) {
-                    return $matches[2];
-                });
-
-        $methodCallRegex = sprintf('/%s->%s\(/', $phpVariableRegex, $phpMethodRegex);
-
-        $prophetMethodCalls = $code
-            ->filter(function ($line) use ($methodCallRegex) {
-                return preg_match($methodCallRegex, $line) === 1
-                    && preg_match('/\$this->/', $line) !== 1;
+        $prophecyAssignments = collect($testMethod->stmts)
+            ->filter(function ($node) {
+                return $node instanceof Assign
+                    && $node->expr instanceof MethodCall
+                    && $node->expr->name === "prophesize";
             })
-            ->map(function ($line, $lineNumber) use ($methodCallRegex) {
-                preg_match($methodCallRegex, $line, $matches);
-                return [
-                    'line'     => $lineNumber,
-                    'variable' => $matches[1],
-                    'method'   => $matches[2],
-                ];
-            })
-            ->filter(function ($methodCall) use ($prophets) {
-                return $prophets->contains(function ($key) use ($methodCall) {
-                    return $key === $methodCall['variable'];
-                });
+            ->map(function (Assign $node) {
+                return ProphecyAssignment::fromAssign($node);
             });
 
-        $contractAnnotationRegex = sprintf('/\/\*\* @contract %s::%s \*\//', $phpClassRegex, $phpMethodRegex);
-
-        $callsWithoutAnnotations = $prophetMethodCalls
-            ->reject(function ($methodCall) use ($code, $contractAnnotationRegex) {
-                $annotationLine = $methodCall['line'] - 1;
-                return isset($code[$annotationLine])
-                    && preg_match($contractAnnotationRegex, $code[$annotationLine]) === 1;
+        $methodCallsOnProphecies = collect($testMethod->stmts)
+            ->filter(function ($node) use ($prophecyAssignments) {
+                return $this->isMethodCallOnProphecy($node, $prophecyAssignments);
             });
 
-        return Test::fromDoubles($callsWithoutAnnotations
-            ->map(function ($methodCall) use ($prophets) {
-                return Double::fromClassAndMethod($prophets[$methodCall['variable']], $methodCall['method']);
+        $methodCallsWithoutContracts = $methodCallsOnProphecies
+            ->reject(function ($methodCall) {
+                return collect(
+                        $this->getRootVariableOnMethodCall($methodCall)
+                            ->getAttribute("comments")
+                )
+                    ->contains(function ($key, $comment) {
+                        return $comment instanceof Doc
+                            && preg_match("#/\*\* @contract [a-zA-Z0-9\\?]+ \*/#", $comment->getText());
+                    });
+            });
+
+        return Test::fromDoubles($methodCallsWithoutContracts
+            ->map(function ($methodCall) use ($prophecyAssignments) {
+                return Double::fromClassAndMethod(
+                    $prophecyAssignments
+                        ->first(function ($key, ProphecyAssignment $prophecyAssignment) use ($methodCall) {
+                            return $prophecyAssignment->getVariableName() === $this->getRootVariableOnMethodCall($methodCall)->name;
+                        })
+                        ->getProphesizedClassName(),
+                    $this->getFirstMethodCallInChain($methodCall)
+                        ->name
+                );
             })
             ->values());
+    }
+
+    private function getRootVariableOnMethodCall($node): Variable
+    {
+        if ($node instanceof MethodCall) {
+            return $this->getRootVariableOnMethodCall($node->var);
+        }
+
+        if ($node instanceof Variable) {
+            return $node;
+        }
+
+        throw new RuntimeException("Given method call's root is not a variable.");
+    }
+
+    private function getFirstMethodCallInChain(MethodCall $node): MethodCall
+    {
+        if ($node->var instanceof MethodCall) {
+            return $this->getFirstMethodCallInChain($node->var);
+        }
+
+        return $node;
+    }
+
+    private function isMethodCallOnProphecy($node, Collection $prophecyAssignments)
+    {
+        if ($node instanceof MethodCall) {
+            return $this->isMethodCallOnProphecy($node->var, $prophecyAssignments);
+        }
+
+        return $node instanceof Variable
+            && $prophecyAssignments->contains(function ($key, ProphecyAssignment $prophecyAssignment) use ($node) {
+                return $prophecyAssignment->getVariableName() === $node->name;
+            });
     }
 }
