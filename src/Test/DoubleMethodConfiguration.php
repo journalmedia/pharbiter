@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace JournalMedia\Pharbiter\Test;
 
-class Double
+class DoubleMethodConfiguration
 {
-    public static function fromClassAndMethod(string $className, string $methodName): Double
+    public static function fromClassAndMethod(string $className, string $methodName): DoubleMethodConfiguration
     {
         return new self($className, $methodName);
     }

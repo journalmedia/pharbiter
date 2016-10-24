@@ -14,3 +14,12 @@ The contract test annotation format is as follows:
 ```
 /** @contract DoubledObjectTest::test_for_method_call */
 ```
+
+## Acceptance Test Cases
+
+* Single test, single double, without annotation
+* Single test, single double, contract not fulfilled
+* Single test, single double, contract fulfilled
+* Single test, multiple doubles
+* Multiple tests
+* Multiple test cases

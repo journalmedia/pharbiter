@@ -9,9 +9,13 @@ class Checker
 {
     public function check(Test $test): string
     {
-        return $test->getDoubles()
-            ->map(function ($double) {
-                return sprintf("No contract marked for %s::%s()", $double->getClassName(), $double->getMethodName());
+        return $test->getDoubleMethodConfigurations()
+            ->map(function ($doubleMethodConfiguration) {
+                return sprintf(
+                    "No contract marked for %s::%s()",
+                    $doubleMethodConfiguration->getClassName(),
+                    $doubleMethodConfiguration->getMethodName()
+                );
             })
             ->implode("\n");
     }

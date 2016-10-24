@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace JournalMedia\PharbiterTest\FixtureTests;
+namespace Fake\Name\Space;
 
-class RepositoryTest extends \PHPUnit_Framework_TestCase
+class RepositoryTestToBeInspected extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test

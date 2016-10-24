@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace JournalMedia\PharbiterTest\Integration\Console;
 
 use JournalMedia\Pharbiter\Console\Kernel;
-use JournalMedia\PharbiterTest\Integration\IntegrationTestCase;
+use JournalMedia\PharbiterTest\Integration\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class KernelTest extends IntegrationTestCase
+class KernelTest extends TestCase
 {
     /**
      * @test

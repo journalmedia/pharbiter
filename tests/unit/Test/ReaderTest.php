@@ -7,12 +7,12 @@ use JournalMedia\Pharbiter\Check\TestCaseLocation;
 use JournalMedia\Pharbiter\Check\TestName;
 use JournalMedia\Pharbiter\ClassLoader;
 use JournalMedia\Pharbiter\Filesystem;
-use JournalMedia\Pharbiter\Test\Double;
+use JournalMedia\Pharbiter\Test\DoubleMethodConfiguration;
 use JournalMedia\Pharbiter\Test\Reader;
 use JournalMedia\Pharbiter\Test\Test;
-use JournalMedia\PharbiterTest\Unit\UnitTestCase;
+use JournalMedia\PharbiterTest\Unit\TestCase;
 
-class ReaderTest extends UnitTestCase
+class ReaderTest extends TestCase
 {
     /**
      * @test
@@ -23,7 +23,7 @@ class ReaderTest extends UnitTestCase
         $classLoader = $this->prophesize(ClassLoader::class);
         $filesystem = $this->prophesize(Filesystem::class);
 
-        $testCaseLocation = TestCaseLocation::fromString("tests/fixtures/tests/RepositoryTest.php");
+        $testCaseLocation = TestCaseLocation::fromString("tests/fixtures/RepositoryTestToBeInspected.php");
         $testName = TestName::fromString("it_saves_an_entity");
 
         $reader = new Reader($classLoader->reveal(), $filesystem->reveal());
@@ -39,8 +39,8 @@ class ReaderTest extends UnitTestCase
         $test = $reader->readTest($testCaseLocation, $testName);
 
         $this->assertEquals(
-            Test::fromDoubles(collect([
-                Double::fromClassAndMethod('Fake\Porter', "export")
+            Test::fromDoubleMethodConfigurations(collect([
+                DoubleMethodConfiguration::fromClassAndMethod('Fake\Porter', "export")
             ])),
             $test
         );

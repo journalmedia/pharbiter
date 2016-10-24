@@ -7,21 +7,21 @@ use Illuminate\Support\Collection;
 
 class Test
 {
-    public static function fromDoubles(Collection $doubles): Test
+    public static function fromDoubleMethodConfigurations(Collection $doubleMethodConfigurations): Test
     {
-        return new self($doubles);
+        return new self($doubleMethodConfigurations);
     }
 
     /** @var Collection */
-    private $doubles;
+    private $doubleMethodConfigurations;
 
-    private function __construct(Collection $doubles)
+    private function __construct(Collection $doubleMethodConfigurations)
     {
-        $this->doubles = $doubles;
+        $this->doubleMethodConfigurations = $doubleMethodConfigurations;
     }
 
-    public function getDoubles(): Collection
+    public function getDoubleMethodConfigurations(): Collection
     {
-        return $this->doubles;
+        return $this->doubleMethodConfigurations;
     }
 }
