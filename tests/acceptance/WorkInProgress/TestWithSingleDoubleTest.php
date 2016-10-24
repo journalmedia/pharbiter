@@ -12,7 +12,12 @@ class TestWithSingleDoubleTest extends TestCase
      */
     public function without_an_annotation()
     {
-        $output = shell_exec("./pharb check tests/fixtures/tests/RepositoryTest.php it_saves_an_entity");
+        $output = shell_exec(
+            sprintf(
+                "./pharb check %s/fixtures/RepositoryTestToBeInspected.php it_saves_an_entity",
+                __DIR__
+            )
+        );
 
         $this->assertSame(
             "No contract marked for Fake\\Porter::export()\n",
