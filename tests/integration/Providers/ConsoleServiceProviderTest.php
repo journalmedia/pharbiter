@@ -6,11 +6,11 @@ namespace JournalMedia\PharbiterTest\Integration\Providers;
 use Illuminate\Container\Container;
 use JournalMedia\Pharbiter\Console\Kernel;
 use JournalMedia\Pharbiter\Providers\ConsoleServiceProvider;
-use JournalMedia\PharbiterTest\Integration\IntegrationTestCase;
+use JournalMedia\PharbiterTest\Integration\TestCase;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-class ConsoleServiceProviderTest extends IntegrationTestCase
+class ConsoleServiceProviderTest extends TestCase
 {
     /**
      * @test

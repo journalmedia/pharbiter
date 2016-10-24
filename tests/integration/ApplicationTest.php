@@ -10,7 +10,7 @@ use JournalMedia\Pharbiter\ClassLoader;
 use JournalMedia\Pharbiter\Console\Kernel;
 use JournalMedia\Pharbiter\Providers\ConsoleServiceProvider;
 
-class ApplicationTest extends IntegrationTestCase
+class ApplicationTest extends TestCase
 {
     /**
      * @test

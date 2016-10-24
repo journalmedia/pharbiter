@@ -7,12 +7,12 @@ use JournalMedia\Pharbiter\Check\CheckQuery;
 use JournalMedia\Pharbiter\Check\TestCaseLocation;
 use JournalMedia\Pharbiter\Check\TestName;
 use JournalMedia\Pharbiter\Console\CheckCommand;
-use JournalMedia\PharbiterTest\Integration\IntegrationTestCase;
+use JournalMedia\PharbiterTest\Integration\TestCase;
 use JournalMedia\PharbiterTest\Unit\Check\CheckQueryTest;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-class CheckCommandTest extends IntegrationTestCase
+class CheckCommandTest extends TestCase
 {
     /**
      * @test
