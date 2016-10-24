@@ -10,9 +10,9 @@ use JournalMedia\Pharbiter\Filesystem;
 use JournalMedia\Pharbiter\Test\DoubleMethodConfiguration;
 use JournalMedia\Pharbiter\Test\Reader;
 use JournalMedia\Pharbiter\Test\Test;
-use JournalMedia\PharbiterTest\Unit\UnitTestCase;
+use JournalMedia\PharbiterTest\Unit\TestCase;
 
-class ReaderTest extends UnitTestCase
+class ReaderTest extends TestCase
 {
     /**
      * @test
