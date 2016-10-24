@@ -23,7 +23,7 @@ class ReaderTest extends TestCase
         $classLoader = $this->prophesize(ClassLoader::class);
         $filesystem = $this->prophesize(Filesystem::class);
 
-        $testCaseLocation = TestCaseLocation::fromString("tests/fixtures/tests/RepositoryTest.php");
+        $testCaseLocation = TestCaseLocation::fromString("tests/fixtures/RepositoryTestToBeInspected.php");
         $testName = TestName::fromString("it_saves_an_entity");
 
         $reader = new Reader($classLoader->reveal(), $filesystem->reveal());
