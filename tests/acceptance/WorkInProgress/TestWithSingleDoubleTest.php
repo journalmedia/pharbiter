@@ -1,7 +1,11 @@
 <?php
 declare(strict_types=1);
 
-class TestWithSingleDoubleTest extends AcceptanceTestCase
+namespace JournalMedia\PharbiterTest\Acceptance\WorkInProgress;
+
+use JournalMedia\PharbiterTest\Acceptance\TestCase;
+
+class TestWithSingleDoubleTest extends TestCase
 {
     /**
      * @test
